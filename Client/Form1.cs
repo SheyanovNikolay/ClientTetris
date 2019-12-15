@@ -18,23 +18,22 @@ namespace Client
         byte[] writeBuffer = new byte[1024];
         int size = 25;
         string h;
-        int chet = 0;
-        byte[] data = new byte[256];
+        //int chet = 0;
+        //byte[] data = new byte[256];
         string message;
-        public TimeSpan reaction;
-        double res = 0;
-        public DateTime time = DateTime.Now;
-        private Point targetposition = Point.Empty;
-        private Point direction = Point.Empty;
+        //public TimeSpan reaction;
+        //double res = 0;
+        //public DateTime time = DateTime.Now;
+        //private Point targetposition = Point.Empty;
+        //private Point direction = Point.Empty;
         int[,] map = new int[16, 8];
 
 
         NetworkStream stream1;
-        NetworkStream streamWrite;
+        //NetworkStream streamWrite;
         public Form1(NetworkStream stream)
         {
             stream1 = stream;
-            
             InitializeComponent();
         }
 
@@ -44,21 +43,21 @@ namespace Client
             {
                 case Keys.Up:
                     writeBuffer = Encoding.Unicode.GetBytes("1");
-                    streamWrite.Write(writeBuffer, 0, writeBuffer.Length);
+                    stream1.Write(writeBuffer, 0, writeBuffer.Length);
                     Invalidate();
 
                     break;
                 case Keys.Down:
                     writeBuffer = Encoding.Unicode.GetBytes("2");
-                    streamWrite.Write(writeBuffer, 0, writeBuffer.Length);
+                    stream1.Write(writeBuffer, 0, writeBuffer.Length);
                     break;
                 case Keys.Right:
                     writeBuffer = Encoding.Unicode.GetBytes("3");
-                    streamWrite.Write(writeBuffer, 0, writeBuffer.Length);
+                    stream1.Write(writeBuffer, 0, writeBuffer.Length);
                     break;
                 case Keys.Left:
                     writeBuffer = Encoding.Unicode.GetBytes("4");
-                    streamWrite.Write(writeBuffer, 0, writeBuffer.Length);
+                    stream1.Write(writeBuffer, 0, writeBuffer.Length);
                     break;
             }
         }
@@ -97,16 +96,16 @@ namespace Client
         {
             while (true)
             {
+                //получение матрицы поля
                 int readBufferLength = stream1.Read(readBuffer, 0, readBuffer.Length);
                 message = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
 
                 map = ToIntArray(message);
-                Thread.Sleep(10);
+                Thread.Sleep(100);
             }
         }
 
         //отрисовка клеток карты
-
         public void DrawGrid(Graphics g)
         {
             for (int i = 0; i <= 16; i++)
@@ -121,23 +120,32 @@ namespace Client
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-
+            //получаем сообщение что все клиенты подключились
             int readBufferLength = stream1.Read(readBuffer, 0, readBuffer.Length);
             message = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
-            if (message == "go")//сервер готов к созданию координат мишеней
+            if (message == "go")
             {
                 writeBuffer = Encoding.Unicode.GetBytes("2");//отправляем серверу что готовы к игре
                 stream1.Write(writeBuffer, 0, writeBuffer.Length);//отправляем
-                Thread th = new Thread(ClientMessage);
-                th.Start();
             }
+            //while (message == "go") { Thread.Sleep(10); }
+            Thread th = new Thread(ClientMessage);
+            th.Start();
+
             // тут говно пошло
-            while (true)
-            { 
+            //while (true)
+            //{
+                //получение матрицы поля
+                //readBufferLength = stream1.Read(readBuffer, 0, readBuffer.Length);
+                //message = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
+
+                //map = ToIntArray(message);
+
                 DrawGrid(e.Graphics);
                 DrawMap(map, e.Graphics);
                 Thread.Sleep(10);
-            }
+            //}
+            //Убираем эту отрисовку новой фигуры , нафиг надо
             //ShowNextShape(e.Graphics);
         }
 
