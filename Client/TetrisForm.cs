@@ -31,46 +31,45 @@ namespace Client
 
         private void OnLoad(object sender, EventArgs e)
         {
-                //получаем сообщение что все клиенты подключились
-                int readBufferLength = getMapFromServerStream.Read(readBuffer, 0, readBuffer.Length);
-                messageFromClient = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
-                if (messageFromClient == "go")
-                {
-                    writeBuffer = Encoding.Unicode.GetBytes("2");//отправляем серверу что готовы к игре
-                    getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);//отправляем
-                }
+            //получаем сообщение что все клиенты подключились
+            int readBufferLength = getMapFromServerStream.Read(readBuffer, 0, readBuffer.Length);
+            messageFromClient = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
+            if (messageFromClient == "go")
+            {
+                writeBuffer = Encoding.Unicode.GetBytes("2");//отправляем серверу что готовы к игре
+                getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);//отправляем
+            }
 
-                Thread getMapFromServer = new Thread(GetMapFromServer);
-                getMapFromServer.Start();
+            Thread getMapFromServer = new Thread(GetMapFromServer);
+            getMapFromServer.Start();
 
-                Thread drawGridLinesThread = new Thread(DrawFullMap);
-                drawGridLinesThread.Start();
+            Thread drawGridLinesThread = new Thread(DrawFullMap);
+            drawGridLinesThread.Start();
+
          }
 
         //событие отрисовки формы
         private void OnPaint(object sender, PaintEventArgs e) {}
 
-        //обработка нажатия клавиш , еще не готово
-        private void keyFunc(object sender, KeyEventArgs e)
+        //обработка нажатий клавиш
+        public void PressKeyHandler(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
                 case Keys.Up:
-                    writeBuffer = Encoding.Unicode.GetBytes("Key");
+                    writeBuffer = Encoding.Unicode.GetBytes("Up");
                     getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
-                    Invalidate();
-
                     break;
                 case Keys.Down:
-                    writeBuffer = Encoding.Unicode.GetBytes("2");
+                    writeBuffer = Encoding.Unicode.GetBytes("Down");
                     getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
                     break;
                 case Keys.Right:
-                    writeBuffer = Encoding.Unicode.GetBytes("3");
+                    writeBuffer = Encoding.Unicode.GetBytes("Right");
                     getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
                     break;
                 case Keys.Left:
-                    writeBuffer = Encoding.Unicode.GetBytes("4");
+                    writeBuffer = Encoding.Unicode.GetBytes("Left");
                     getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
                     break;
             }
@@ -89,17 +88,25 @@ namespace Client
                     }
                     if (map[i, j] == 2)
                     {
-                        e.FillRectangle(Brushes.Yellow, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                        e.FillRectangle(Brushes.Orange, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
                     }
                     if (map[i, j] == 3)
                     {
-                        e.FillRectangle(Brushes.Green, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                        e.FillRectangle(Brushes.Yellow, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
                     }
                     if (map[i, j] == 4)
                     {
-                        e.FillRectangle(Brushes.Blue, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                        e.FillRectangle(Brushes.Green, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
                     }
                     if (map[i, j] == 5)
+                    {
+                        e.FillRectangle(Brushes.MidnightBlue, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                    }
+                    if (map[i, j] == 6)
+                    {
+                        e.FillRectangle(Brushes.Blue, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                    }
+                    if (map[i, j] == 7)
                     {
                         e.FillRectangle(Brushes.Purple, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
                     }
@@ -110,7 +117,6 @@ namespace Client
         //отрисовка клеток карты
         public void DrawGrid(Graphics g)
         {
-            //Graphics drawGridGraphics = this.CreateGraphics();
             for (int i = 0; i <= 16; i++)
             {
                 g.DrawLine(Pens.Black, new Point(50, 50 + i * size), new Point(50 + 8 * size, 50 + i * size));
@@ -143,7 +149,7 @@ namespace Client
             {
                 DrawGrid(drawMapGraphics);
                 DrawMap(map, drawMapGraphics);
-                Thread.Sleep(50);
+                Thread.Sleep(200);
             }
         }
 

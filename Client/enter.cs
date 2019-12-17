@@ -20,6 +20,7 @@ namespace Client
         public enter()
         {
             InitializeComponent();
+            button1.Enabled = false;
         }    
 
         //connect
@@ -31,6 +32,8 @@ namespace Client
             bytes = Encoding.Unicode.GetBytes(textBox3.Text);//send name
             stream.Write(bytes, 0, bytes.Length);
             label6.Text = "установлено";
+            button1.Enabled = true;
+            button3.Enabled = false;
         }
 
         //play
@@ -67,6 +70,8 @@ namespace Client
         //exit
         private void button2_Click(object sender, EventArgs e)
         {
+            stream.Close();
+            client.Close();
             Close();
         }
         

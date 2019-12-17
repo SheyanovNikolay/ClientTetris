@@ -40,6 +40,7 @@
             this.Text = "CoopTetris";
             this.Load += new System.EventHandler(this.OnLoad);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PressKeyHandler);
             this.ResumeLayout(false);
 
         }
