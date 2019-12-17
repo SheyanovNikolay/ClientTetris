@@ -40,8 +40,9 @@ namespace Client
             {
                 bytes = Encoding.Unicode.GetBytes("1");
                 stream.Write(bytes, 0, bytes.Length);
-                Form1 fr1 = new Form1(stream);
+                TetrisForm fr1 = new TetrisForm(stream);
                 fr1.Show();
+                this.Hide();
             }
             catch (Exception ex)
             {
@@ -58,7 +59,7 @@ namespace Client
             message = Encoding.Unicode.GetString(data, 0, size);
             if (message == "go")
             {
-                Form1 fr1 = new Form1(stream);
+                TetrisForm fr1 = new TetrisForm(stream);
                 fr1.Show();
             }
         }

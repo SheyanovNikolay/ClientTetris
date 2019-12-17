@@ -12,57 +12,72 @@ using System.Windows.Forms;
 
 namespace Client
 {
-    public partial class Form1 : Form
+    public partial class TetrisForm : Form
     {
         byte[] readBuffer = new byte[1024];
         byte[] writeBuffer = new byte[1024];
-        int size = 25;
-        string h;
-        //int chet = 0;
-        //byte[] data = new byte[256];
-        string message;
-        //public TimeSpan reaction;
-        //double res = 0;
-        //public DateTime time = DateTime.Now;
-        //private Point targetposition = Point.Empty;
-        //private Point direction = Point.Empty;
+        static int size = 25; //размер 1 клетки поля
+        string messageFromClient;
+
         int[,] map = new int[16, 8];
+        
+        NetworkStream getMapFromServerStream;
 
-
-        NetworkStream stream1;
-        //NetworkStream streamWrite;
-        public Form1(NetworkStream stream)
+        public TetrisForm(NetworkStream stream)
         {
-            stream1 = stream;
+            getMapFromServerStream = stream;
             InitializeComponent();
         }
 
+        private void OnLoad(object sender, EventArgs e)
+        {
+                //получаем сообщение что все клиенты подключились
+                int readBufferLength = getMapFromServerStream.Read(readBuffer, 0, readBuffer.Length);
+                messageFromClient = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
+                if (messageFromClient == "go")
+                {
+                    writeBuffer = Encoding.Unicode.GetBytes("2");//отправляем серверу что готовы к игре
+                    getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);//отправляем
+                }
+
+                Thread getMapFromServer = new Thread(GetMapFromServer);
+                getMapFromServer.Start();
+
+                Thread drawGridLinesThread = new Thread(DrawFullMap);
+                drawGridLinesThread.Start();
+         }
+
+        //событие отрисовки формы
+        private void OnPaint(object sender, PaintEventArgs e) {}
+
+        //обработка нажатия клавиш , еще не готово
         private void keyFunc(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
                 case Keys.Up:
-                    writeBuffer = Encoding.Unicode.GetBytes("1");
-                    stream1.Write(writeBuffer, 0, writeBuffer.Length);
+                    writeBuffer = Encoding.Unicode.GetBytes("Key");
+                    getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
                     Invalidate();
 
                     break;
                 case Keys.Down:
                     writeBuffer = Encoding.Unicode.GetBytes("2");
-                    stream1.Write(writeBuffer, 0, writeBuffer.Length);
+                    getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
                     break;
                 case Keys.Right:
                     writeBuffer = Encoding.Unicode.GetBytes("3");
-                    stream1.Write(writeBuffer, 0, writeBuffer.Length);
+                    getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
                     break;
                 case Keys.Left:
                     writeBuffer = Encoding.Unicode.GetBytes("4");
-                    stream1.Write(writeBuffer, 0, writeBuffer.Length);
+                    getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
                     break;
             }
         }
 
-        public void DrawMap(int[,] map, Graphics e)
+        //отрисовка карты
+        public static void DrawMap(int[,] map, Graphics e)
         {
             for (int i = 0; i < 16; i++)
             {
@@ -92,22 +107,10 @@ namespace Client
             }
         }
 
-        public void ClientMessage()
-        {
-            while (true)
-            {
-                //получение матрицы поля
-                int readBufferLength = stream1.Read(readBuffer, 0, readBuffer.Length);
-                message = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
-
-                map = ToIntArray(message);
-                Thread.Sleep(100);
-            }
-        }
-
         //отрисовка клеток карты
         public void DrawGrid(Graphics g)
         {
+            //Graphics drawGridGraphics = this.CreateGraphics();
             for (int i = 0; i <= 16; i++)
             {
                 g.DrawLine(Pens.Black, new Point(50, 50 + i * size), new Point(50 + 8 * size, 50 + i * size));
@@ -118,37 +121,33 @@ namespace Client
             }
         }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+        //получение новых данных матрицы с сервера
+        public void GetMapFromServer()
         {
-            //получаем сообщение что все клиенты подключились
-            int readBufferLength = stream1.Read(readBuffer, 0, readBuffer.Length);
-            message = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
-            if (message == "go")
+            while (true)
             {
-                writeBuffer = Encoding.Unicode.GetBytes("2");//отправляем серверу что готовы к игре
-                stream1.Write(writeBuffer, 0, writeBuffer.Length);//отправляем
-            }
-            //while (message == "go") { Thread.Sleep(10); }
-            Thread th = new Thread(ClientMessage);
-            th.Start();
-
-            // тут говно пошло
-            //while (true)
-            //{
                 //получение матрицы поля
-                //readBufferLength = stream1.Read(readBuffer, 0, readBuffer.Length);
-                //message = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
+                int readBufferLength = getMapFromServerStream.Read(readBuffer, 0, readBuffer.Length);
+                messageFromClient = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
 
-                //map = ToIntArray(message);
-
-                DrawGrid(e.Graphics);
-                DrawMap(map, e.Graphics);
-                Thread.Sleep(10);
-            //}
-            //Убираем эту отрисовку новой фигуры , нафиг надо
-            //ShowNextShape(e.Graphics);
+                map = ToIntArray(messageFromClient);
+                Thread.Sleep(200);
+            }
         }
 
+       //метод для отрисовки карты в отдельном потоке   
+       private void DrawFullMap()
+        {
+            Graphics drawMapGraphics = this.CreateGraphics();
+            while (true)
+            {
+                DrawGrid(drawMapGraphics);
+                DrawMap(map, drawMapGraphics);
+                Thread.Sleep(50);
+            }
+        }
+
+        //преобразование входной строки матрицы в двумерную матрицу
         public static int[,] ToIntArray (string inputString)
         {
             int[,] resultArrayInt = new int[16, 8];
@@ -165,5 +164,6 @@ namespace Client
             }
             return resultArrayInt;
         }
+
     }
 }
