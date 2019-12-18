@@ -130,16 +130,23 @@ namespace Client
         //получение новых данных матрицы с сервера
         public void GetMapFromServer()
         {
-            while (true)
-            {
-                //получение матрицы поля
-                int readBufferLength = getMapFromServerStream.Read(readBuffer, 0, readBuffer.Length);
-                messageFromClient = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
+            try {
+                while (true)
+                {
+                    //получение матрицы поля
+                    int readBufferLength = getMapFromServerStream.Read(readBuffer, 0, readBuffer.Length);
+                    messageFromClient = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
 
-                map = ToIntArray(messageFromClient);
-                Thread.Sleep(200);
+                    map = ToIntArray(messageFromClient);
+                    Thread.Sleep(200);
+                }
+
             }
-        }
+            catch(Exception e)
+            { }
+            getMapFromServerStream.Close();
+
+            }
 
        //метод для отрисовки карты в отдельном потоке   
        private void DrawFullMap()
