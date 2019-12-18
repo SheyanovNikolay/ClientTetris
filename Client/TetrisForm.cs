@@ -137,7 +137,7 @@ namespace Client
                 messageFromClient = Encoding.Unicode.GetString(readBuffer, 0, readBufferLength);
 
                 map = ToIntArray(messageFromClient);
-                Thread.Sleep(200);
+                Thread.Sleep(300); // 300
             }
         }
 
@@ -149,7 +149,7 @@ namespace Client
             {
                 DrawGrid(drawMapGraphics);
                 DrawMap(map, drawMapGraphics);
-                Thread.Sleep(200);
+                Thread.Sleep(10);
             }
         }
 
