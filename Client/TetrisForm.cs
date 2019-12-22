@@ -156,8 +156,9 @@ namespace Client
             {
                 DrawGrid(drawMapGraphics);
                 DrawMap(map, drawMapGraphics);
-                Thread.Sleep(200);
+                Thread.Sleep(300);
                 Invalidate();
+                DrawGrid(drawMapGraphics);
             }
         }
 
