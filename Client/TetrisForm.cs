@@ -18,8 +18,9 @@ namespace Client
         byte[] writeBuffer = new byte[1024];
         static int size = 25; //размер 1 клетки поля
         string messageFromClient;
+        static readonly int mapWidth = 12;
 
-        int[,] map = new int[16, 8];
+        int[,] map = new int[16, mapWidth];
         
         NetworkStream getMapFromServerStream;
 
@@ -80,7 +81,7 @@ namespace Client
         {
             for (int i = 0; i < 16; i++)
             {
-                for (int j = 0; j < 8; j++)
+                for (int j = 0; j < mapWidth; j++)
                 {
                     if (map[i, j] == 1)
                     {
@@ -119,9 +120,9 @@ namespace Client
         {
             for (int i = 0; i <= 16; i++)
             {
-                g.DrawLine(Pens.Black, new Point(50, 50 + i * size), new Point(50 + 8 * size, 50 + i * size));
+                g.DrawLine(Pens.Black, new Point(50, 50 + i * size), new Point(50 + mapWidth * size, 50 + i * size));
             }
-            for (int i = 0; i <= 8; i++)
+            for (int i = 0; i <= mapWidth; i++)
             {
                 g.DrawLine(Pens.Black, new Point(50 + i * size, 50), new Point(50 + i * size, 50 + 16 * size));
             }
@@ -164,14 +165,14 @@ namespace Client
         //преобразование входной строки матрицы в двумерную матрицу
         public static int[,] ToIntArray (string inputString)
         {
-            int[,] resultArrayInt = new int[16, 8];
+            int[,] resultArrayInt = new int[16, mapWidth];
             string[] resultArrayLines = inputString.Split(new char[] { '/' });
             string[] resultArrayElements;
 
             for (int y = 0; y < 16; y++)
             {
                 resultArrayElements = resultArrayLines[y].Split(new char[] { ' ' });
-                for (int x = 0; x < 8; x++)
+                for (int x = 0; x < mapWidth; x++)
                 {
                     resultArrayInt[y, x] = Convert.ToInt32(resultArrayElements[x]);
                 }
