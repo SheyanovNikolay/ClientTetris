@@ -21,7 +21,7 @@ namespace Client
         static readonly int mapWidth = 12;
 
         int[,] map = new int[16, mapWidth];
-        
+
         NetworkStream getMapFromServerStream;
 
         public TetrisForm(NetworkStream stream)
@@ -47,10 +47,10 @@ namespace Client
             Thread drawGridLinesThread = new Thread(DrawFullMap);
             drawGridLinesThread.Start();
 
-         }
+        }
 
         //событие отрисовки формы
-        private void OnPaint(object sender, PaintEventArgs e) {}
+        private void OnPaint(object sender, PaintEventArgs e) { }
 
         //обработка нажатий клавиш
         public void PressKeyHandler(object sender, KeyEventArgs e)
@@ -71,6 +71,22 @@ namespace Client
                     break;
                 case Keys.Left:
                     writeBuffer = Encoding.Unicode.GetBytes("Left");
+                    getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
+                    break;
+                case Keys.W:
+                    writeBuffer = Encoding.Unicode.GetBytes("WUp");
+                    getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
+                    break;
+                case Keys.S:
+                    writeBuffer = Encoding.Unicode.GetBytes("SDown");
+                    getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
+                    break;
+                case Keys.D:
+                    writeBuffer = Encoding.Unicode.GetBytes("DRight");
+                    getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
+                    break;
+                case Keys.A:
+                    writeBuffer = Encoding.Unicode.GetBytes("ALeft");
                     getMapFromServerStream.Write(writeBuffer, 0, writeBuffer.Length);
                     break;
             }
@@ -131,7 +147,8 @@ namespace Client
         //получение новых данных матрицы с сервера
         public void GetMapFromServer()
         {
-            try {
+            try
+            {
                 while (true)
                 {
                     //получение матрицы поля
@@ -143,14 +160,14 @@ namespace Client
                 }
 
             }
-            catch(Exception e)
-            { }
-            getMapFromServerStream.Close();
-
+            catch (Exception e)
+            {
+                getMapFromServerStream.Close();
             }
+        }
 
-       //метод для отрисовки карты в отдельном потоке   
-       private void DrawFullMap()
+        //метод для отрисовки карты в отдельном потоке   
+        private void DrawFullMap()
         {
             Graphics drawMapGraphics = this.CreateGraphics();
             while (true)
@@ -164,7 +181,7 @@ namespace Client
         }
 
         //преобразование входной строки матрицы в двумерную матрицу
-        public static int[,] ToIntArray (string inputString)
+        public static int[,] ToIntArray(string inputString)
         {
             int[,] resultArrayInt = new int[16, mapWidth];
             string[] resultArrayLines = inputString.Split(new char[] { '/' });
