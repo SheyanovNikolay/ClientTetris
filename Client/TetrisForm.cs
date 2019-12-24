@@ -174,7 +174,7 @@ namespace Client
             {
                 DrawGrid(drawMapGraphics);
                 DrawMap(map, drawMapGraphics);
-                Thread.Sleep(300);
+                Thread.Sleep(400);
                 Invalidate();
                 DrawGrid(drawMapGraphics);
             }
