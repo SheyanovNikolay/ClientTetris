@@ -95,52 +95,66 @@ namespace Client
         //отрисовка карты
         public static void DrawMap(int[,] map, Graphics e)
         {
-            for (int i = 0; i < 16; i++)
+            try
             {
-                for (int j = 0; j < mapWidth; j++)
+                for (int i = 0; i < 16; i++)
                 {
-                    if (map[i, j] == 1)
+                    for (int j = 0; j < mapWidth; j++)
                     {
-                        e.FillRectangle(Brushes.Red, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
-                    }
-                    if (map[i, j] == 2)
-                    {
-                        e.FillRectangle(Brushes.Orange, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
-                    }
-                    if (map[i, j] == 3)
-                    {
-                        e.FillRectangle(Brushes.Yellow, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
-                    }
-                    if (map[i, j] == 4)
-                    {
-                        e.FillRectangle(Brushes.Green, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
-                    }
-                    if (map[i, j] == 5)
-                    {
-                        e.FillRectangle(Brushes.MidnightBlue, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
-                    }
-                    if (map[i, j] == 6)
-                    {
-                        e.FillRectangle(Brushes.Blue, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
-                    }
-                    if (map[i, j] == 7)
-                    {
-                        e.FillRectangle(Brushes.Purple, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                        if (map[i, j] == 1)
+                        {
+                            e.FillRectangle(Brushes.Red, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                        }
+                        if (map[i, j] == 2)
+                        {
+                            e.FillRectangle(Brushes.Orange, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                        }
+                        if (map[i, j] == 3)
+                        {
+                            e.FillRectangle(Brushes.Yellow, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                        }
+                        if (map[i, j] == 4)
+                        {
+                            e.FillRectangle(Brushes.Green, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                        }
+                        if (map[i, j] == 5)
+                        {
+                            e.FillRectangle(Brushes.MidnightBlue, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                        }
+                        if (map[i, j] == 6)
+                        {
+                            e.FillRectangle(Brushes.Blue, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                        }
+                        if (map[i, j] == 7)
+                        {
+                            e.FillRectangle(Brushes.Purple, new Rectangle(50 + j * (size) + 1, 50 + i * (size) + 1, size - 1, size - 1));
+                        }
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+                
             }
         }
 
         //отрисовка клеток карты
         public void DrawGrid(Graphics g)
         {
-            for (int i = 0; i <= 16; i++)
+            try
             {
-                g.DrawLine(Pens.Black, new Point(50, 50 + i * size), new Point(50 + mapWidth * size, 50 + i * size));
+                for (int i = 0; i <= 16; i++)
+                {
+                    g.DrawLine(Pens.Black, new Point(50, 50 + i * size), new Point(50 + mapWidth * size, 50 + i * size));
+                }
+                for (int i = 0; i <= mapWidth; i++)
+                {
+                    g.DrawLine(Pens.Black, new Point(50 + i * size, 50), new Point(50 + i * size, 50 + 16 * size));
+                }
             }
-            for (int i = 0; i <= mapWidth; i++)
+            catch(Exception e)
             {
-                g.DrawLine(Pens.Black, new Point(50 + i * size, 50), new Point(50 + i * size, 50 + 16 * size));
+                Close();
             }
         }
 
@@ -198,5 +212,10 @@ namespace Client
             return resultArrayInt;
         }
 
+        private void OnClose(object sender, FormClosingEventArgs e)
+        {
+            Dispose();
+            Close();
+        }
     }
 }

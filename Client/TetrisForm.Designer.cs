@@ -32,13 +32,14 @@
             // 
             // TetrisForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(781, 750);
+            this.ClientSize = new System.Drawing.Size(586, 603);
             this.DoubleBuffered = true;
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "TetrisForm";
             this.Text = "CoopTetris";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnClose);
             this.Load += new System.EventHandler(this.OnLoad);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PressKeyHandler);
